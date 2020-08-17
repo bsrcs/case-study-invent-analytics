@@ -1,1 +1,1 @@
-# case-study-invent-analytics
+IMDB movie listing and searching application using ECMA6 and ReactJS
