@@ -15,10 +15,12 @@ import MovieDetailPopUp from "./MovieDetailPopup"
 
 function ImdbTable() {
   const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
   const [tableData, setTableData] = useState([])
   const [showDialogComponent, setDialogOpen] = useState(false)
   const [selectedMovieDetail, setSelectedMovieDetail] = useState({})
+  const [totalResults, setTotalResults] = useState(0);
+  const [searchText, setSearchText] = useState("pokemon");
 
   const useStyles = makeStyles({
     table: {
@@ -27,8 +29,11 @@ function ImdbTable() {
   })
   const classes = useStyles()
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage)
+  const handleChangePage = (event, newPageNumber) => {
+    console.log("current page number: "+newPageNumber);
+    //update page number
+    setPage(newPageNumber);
+    getSearchDataForTableFromApi(searchText,page);
   }
 
   const handleChangeRowsPerPage = (event) => {
@@ -36,21 +41,29 @@ function ImdbTable() {
     setPage(0)
   }
 
-  async function getSearchDataForTableFromApi(searchTitle) {
+  async function getSearchDataForTableFromApi(searchTitle,pageNum) {
     try {
-      searchTitle = ApiDetails.BY_SEARCH.replace(
+      var searchTitleUrl = ApiDetails.BY_SEARCH.replace(
         "<TITLE_TO_SEARCH>",
         searchTitle
       )
+      //use 'page' state variable to call api with a specific page number
+      var pageToShowUrl = ApiDetails.PAGE.replace("<PAGE_TO_SHOW>", pageNum+1)
+
       var url =
         ApiDetails.BASEURL +
         ApiDetails.APIKEY +
         ApiDetails.PARAMETER_SEPERATOR +
-        searchTitle
+        searchTitleUrl +
+        ApiDetails.PARAMETER_SEPERATOR +
+        pageToShowUrl
       console.log("url: " + url)
       const response = await Axios.get(url)
-      console.log("Response from API : " + response)
+      //console.log("api response : "+JSON.stringify(response));
       if (response.data.Response === "True") {
+        // set total results for pagination
+        setTotalResults(parseInt(response.data.totalResults));
+        // set data in the table
         setTableData(response.data.Search)
         console.log("The movie data successfully fetched.")
       } else {
@@ -64,13 +77,16 @@ function ImdbTable() {
   // searchInApi called by SearchBar component
   function searchInApi(searchText) {
     console.log("Searched for : " + searchText)
-    getSearchDataForTableFromApi(searchText)
+    setPage(0);
+    // store the current seach text for later use
+    setSearchText(searchText);
+    getSearchDataForTableFromApi(searchText,page)
   }
 
   // after rendering first time
   useEffect(() => {
     // default search
-    getSearchDataForTableFromApi("pokemon")
+    getSearchDataForTableFromApi(searchText,page)
   }, [])
 
   //when user clicks on the movie id
@@ -82,17 +98,17 @@ function ImdbTable() {
         ApiDetails.BASEURL +
         ApiDetails.APIKEY +
         ApiDetails.PARAMETER_SEPERATOR +
-        ApiDetails.BY_ID.replace("<ID_TO_SEARCH>", imdbID);
-        console.log(url);
-      const response = await Axios.get(url);
-      console.log(response.data);
-      setSelectedMovieDetail(response.data);
+        ApiDetails.BY_ID.replace("<ID_TO_SEARCH>", imdbID)
+      console.log(url)
+      const response = await Axios.get(url)
+      //console.log(response.data)
+      setSelectedMovieDetail(response.data)
     } catch (err) {
-      setSelectedMovieDetail({});
-      console.log("Error occurred!!!"+ err);
+      setSelectedMovieDetail({})
+      console.log("Error occurred! " + err)
     }
     //open the dialog
-    setDialogOpen(true);
+    setDialogOpen(true)
   }
 
   // closeDialog called by "MovieDetailPopUp" component
@@ -141,9 +157,9 @@ function ImdbTable() {
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[5, 10]}
+        rowsPerPageOptions={[10]}
         component="div"
-        count={tableData.length}
+        count={totalResults}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}
