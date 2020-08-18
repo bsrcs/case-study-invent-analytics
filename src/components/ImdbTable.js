@@ -27,6 +27,7 @@ function ImdbTable() {
       minWidth: 650,
     },
   })
+
   const classes = useStyles()
 
   const handleChangePage = (event, newPageNumber) => {
@@ -43,10 +44,7 @@ function ImdbTable() {
 
   async function getSearchDataForTableFromApi(searchTitle,pageNum) {
     try {
-      var searchTitleUrl = ApiDetails.BY_SEARCH.replace(
-        "<TITLE_TO_SEARCH>",
-        searchTitle
-      )
+      var searchTitleUrl = ApiDetails.BY_SEARCH.replace("<TITLE_TO_SEARCH>",encodeURI(searchTitle));
       //use 'page' state variable to call api with a specific page number
       var pageToShowUrl = ApiDetails.PAGE.replace("<PAGE_TO_SHOW>", pageNum+1)
 
@@ -63,8 +61,20 @@ function ImdbTable() {
       if (response.data.Response === "True") {
         // set total results for pagination
         setTotalResults(parseInt(response.data.totalResults));
+        var responseList=response.data.Search;
+
+        // filter duplicate responses from api
+        const filteredArr = responseList.reduce((acc, current) => {
+          const x = acc.find(item => item.imdbID === current.imdbID);
+          if (!x) {
+            return acc.concat([current]);
+          } else {
+            return acc;
+          }
+        }, []);
+        
         // set data in the table
-        setTableData(response.data.Search)
+        setTableData(filteredArr)
         console.log("The movie data successfully fetched.")
       } else {
         setTableData([])
