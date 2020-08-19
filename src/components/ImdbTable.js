@@ -11,7 +11,7 @@ import TableRow from "@material-ui/core/TableRow"
 import Paper from "@material-ui/core/Paper"
 import Axios from "axios"
 import * as ApiDetails from "./utils/ApiDetails"
-import MovieDetailPopUp from "./MovieDetailPopup"
+import MovieModal from "./MovieModal"
 
 function ImdbTable() {
   const [page, setPage] = useState(0)
@@ -65,8 +65,8 @@ function ImdbTable() {
 
         // filter duplicate responses from api
         const filteredArr = responseList.reduce((acc, current) => {
-          const x = acc.find(item => item.imdbID === current.imdbID);
-          if (!x) {
+          const itemWithDuplicateId = acc.find(item => item.imdbID === current.imdbID);
+          if (!itemWithDuplicateId) {
             return acc.concat([current]);
           } else {
             return acc;
@@ -97,6 +97,7 @@ function ImdbTable() {
   useEffect(() => {
     // default search
     getSearchDataForTableFromApi(searchText,page)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   //when user clicks on the movie id
@@ -129,7 +130,7 @@ function ImdbTable() {
   return (
     <>
       {showDialogComponent && (
-        <MovieDetailPopUp
+        <MovieModal
           onClose={closeDialog}
           movieDetail={selectedMovieDetail}
         />

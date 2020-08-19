@@ -1,50 +1,64 @@
-import React from "react"
-import Dialog from "@material-ui/core/Dialog"
-import DialogActions from "@material-ui/core/DialogActions"
-import DialogContent from "@material-ui/core/DialogContent"
-import DialogTitle from "@material-ui/core/DialogTitle"
+import React, { useState } from "react"
 import { makeStyles } from "@material-ui/core/styles"
-import Card from "@material-ui/core/Card"
-import CardActionArea from "@material-ui/core/CardActionArea"
-import CardContent from "@material-ui/core/CardContent"
+import Grid from "@material-ui/core/Grid"
+import Modal from "@material-ui/core/Modal"
 import CardMedia from "@material-ui/core/CardMedia"
-import Button from "@material-ui/core/Button"
-import Typography from "@material-ui/core/Typography"
 import Table from "@material-ui/core/Table"
 import TableBody from "@material-ui/core/TableBody"
 import TableCell from "@material-ui/core/TableCell"
 import TableContainer from "@material-ui/core/TableContainer"
 import TableHead from "@material-ui/core/TableHead"
 import TableRow from "@material-ui/core/TableRow"
+import Typography from "@material-ui/core/Typography"
 
-function MovieDetailPopUp(props) {
-  const useStyles = makeStyles({
-    root: {
-      maxWidth: 345,
+function MovieModal(props) {
+  const [modalStyle] = useState(getModalStyle)
+
+  function getModalStyle() {
+    return {
+      top: `50%`,
+      left: `50%`,
+      transform: `translate(-50%, -50%)`,
+    }
+  }
+
+  const useStyles = makeStyles((theme) => ({
+    paper: {
+      position: "absolute",
+      width: "60%",
+      backgroundColor: theme.palette.background.paper,
+      border: "hidden",
+      boxShadow: theme.shadows[5],
+      padding: theme.spacing(2, 4, 3),
     },
     media: {
-      height: 400,
-    },
-  })
+      height: "400px",
+    }
+  }))
+
   const classes = useStyles()
 
   return (
-    <Dialog
+    <Modal
       open={true}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
+      onClose={() => {
+        props.onClose()
+      }}
+      aria-labelledby="simple-modal-title"
+      aria-describedby="simple-modal-description"
     >
-<DialogTitle id="alert-dialog-title">{props.movieDetail.Title} , IMDB {props.movieDetail.imdbRating}</DialogTitle>
-      <DialogContent>
-        <Card className={classes.root}>
-          <CardActionArea>
-            <CardMedia
+      <div style={modalStyle} className={classes.paper}>
+        <h2 id="simple-modal-title">{props.movieDetail.Title}</h2>
+        <Grid container spacing={3}>
+          <Grid item xs={6}>
+          <CardMedia
               className={classes.media}
               image={props.movieDetail.Poster}
               title={props.movieDetail.Title}
             />
-            <CardContent>
-              <TableContainer>
+          </Grid>
+          <Grid item xs={6}>
+          <TableContainer>
                 <Table aria-label="simple table">
                   <TableHead>
                     <TableRow>
@@ -73,22 +87,14 @@ function MovieDetailPopUp(props) {
               <Typography variant="body2" color="textSecondary" component="p">
                 {props.movieDetail.Plot}
               </Typography>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => {
-            props.onClose()
-          }}
-          color="primary"
-        >
-          Okay
-        </Button>
-      </DialogActions>
-    </Dialog>
+              <hr />
+              <br/>
+              <Typography gutterBottom variant="h5" component="h2">IMDB : {props.movieDetail.imdbRating}</Typography>
+          </Grid>
+        </Grid>
+      </div>
+    </Modal>
   )
 }
 
-export default MovieDetailPopUp
+export default MovieModal

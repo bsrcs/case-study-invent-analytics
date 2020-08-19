@@ -4,7 +4,6 @@ import ImdbTable from "./ImdbTable";
 function Content() {
   return (
     <>
-      
       <ImdbTable />
     </>
   )
