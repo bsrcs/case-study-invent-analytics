@@ -25,14 +25,16 @@ function MovieModal(props) {
   const useStyles = makeStyles((theme) => ({
     paper: {
       position: "absolute",
-      width: "60%",
+      width: "65%",
       backgroundColor: theme.palette.background.paper,
       border: "hidden",
       boxShadow: theme.shadows[5],
       padding: theme.spacing(2, 4, 3),
     },
     media: {
-      height: "400px",
+      height: 400,
+      display: 'block',
+      margin: 'auto'
     }
   }))
 

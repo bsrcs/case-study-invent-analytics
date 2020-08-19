@@ -2,8 +2,17 @@ import React from "react"
 
 function Header() {
   return (
-      <h1>IMDB App</h1>
+    <>
+      <br />
+      <br />
+      <a href="https://github.com/bsrcs/case-study-invent-analytics">
+        Follow github link by clicking here
+      </a>
+      <br />
+      <br />
+      <br />
+    </>
   )
 }
 
-export default Header;
+export default Header
