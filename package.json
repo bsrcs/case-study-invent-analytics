@@ -10,6 +10,7 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.19.2",
+    "express": "^4.17.1",
     "material-ui-popup-state": "^1.6.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -17,11 +18,11 @@
     "react-window": "^1.8.5"
   },
   "scripts": {
+    "start": "node server.js #Production only!",
+    "postinstall": "npm run build",
     "dev": "react-scripts start",
-    "heroku-postbuild": "npm run build",
-    "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
